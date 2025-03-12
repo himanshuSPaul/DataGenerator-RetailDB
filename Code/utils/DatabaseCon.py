@@ -2,7 +2,7 @@ import psycopg2
 from psycopg2 import sql
 import configparser
 from pathlib import Path
- 
+from Logger import Logger
 
 # Get the absolute path of the project root
 PROJECT_ROOT = Path(__file__).resolve().parent.parent  # Moves two levels up to the project root
@@ -15,6 +15,7 @@ class PostgresDBCon:
     """Represents a sale transaction with multiple sale details."""
     def __init__(self):
         """ Create Connection to Postgreas Database"""
+        self.logger = Logger()
 
         config = configparser.ConfigParser()
         config.read(CONFIG_PATH)
@@ -30,35 +31,39 @@ class PostgresDBCon:
     
     def get_connection(self):
         """Establishes and returns a database connection."""
+        self.logger.write_log("INFO", "Connecting Postgres Database ..",__file__)
+        
         try:
             conn = psycopg2.connect(**self.DB_CONFIG)
             return conn
         except Exception as e:
-            print("Error connecting to the database:", e)
+            # print("Error connecting to the database:", e)
+            self.logger.write_log("error", "Error while connecting to the database:"+ str(e),__file__)
             return None
 
     def test_connection(self,cursor):
         """Test database connection."""
-        print("Testing Connection : ")
+        self.logger.write_log("INFO", "Testing Database connection ... ",__file__)
         testSQL= """ select current_user ,current_timestamp """
+        self.logger.write_log("INFO", f"Executing Query :{testSQL}",__file__)
         cursor.execute(testSQL)
         rows = cursor.fetchall()
         user,qry_ts = rows[0]
         print(f"Logged In User: {user}")
         print(f"Logged In Time: {qry_ts}")
         if user ==self.user:
-            print("[INFO] Database connection established.")
+            self.logger.write_log("INFO", f"Database connection established",__file__)
         else :
-            print("Failed To Connect To Postgres Database")
+            self.logger.write_log("ERROR", f"Failed To Connect To Postgres Database",__file__)
 
 
     def close_connection(self,conn, cursor=None):
         """Closes the database connection and cursor safely."""
         if cursor:
-            print("Closing Cursor ...")
+            self.logger.write_log("INFO", "Closing Cursor ...",__file__)
             cursor.close()
         if conn:
-            print("Closing Connection ...")
+            self.logger.write_log("INFO", "Closing Connection ...",__file__)
             conn.close()
 
 if __name__ =="__main__":
