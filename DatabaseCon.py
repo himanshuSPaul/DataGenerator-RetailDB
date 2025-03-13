@@ -5,11 +5,12 @@ from pathlib import Path
 from Logger import Logger
 
 # Get the absolute path of the project root
-PROJECT_ROOT = Path(__file__).resolve().parent.parent  # Moves two levels up to the project root
+PROJECT_ROOT = Path(__file__).resolve().parent #.parent  # Moves two levels up to the project root
+print("PROJECT_ROOT :")
 print("PROJECT_ROOT :",PROJECT_ROOT)
 
 # Construct the path to the database.ini file dynamically
-CONFIG_PATH = PROJECT_ROOT / "config" / "config.ini"
+CONFIG_PATH = PROJECT_ROOT / "Code" / "config" / "config.ini"
 
 class PostgresDBCon:
     """Represents a sale transaction with multiple sale details."""

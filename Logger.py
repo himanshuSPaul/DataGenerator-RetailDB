@@ -19,6 +19,7 @@ class Logger:
     _project_root = Path(__file__).resolve().parent.parent
     _log_directory = _project_root / "logs"
     _log_file_path = _log_directory / f"{_run_id}.log"
+    print(f"log_file_path :{_log_file_path}")
 
     def __new__(cls):
         """Ensure only one instance of Logger is created."""
