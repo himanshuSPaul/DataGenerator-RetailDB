@@ -1,5 +1,5 @@
 --Dim
-1.ProductCategories  --done  --py
+1.ProductCategories  --Done  --py
 2.Suppliers          --Done  --py file
 3.Products           --Done  --py  
 4.Employees          --Done  --py file
@@ -9,9 +9,13 @@
 
 ---Fact
 7.EmployeeAttendance  --done  --py file
-8.Sales  -- python
-9.SaleDetails   -- python
+8.SaleDetails   
+9.Sales  
+10.Inventory
+
 10.PurchaseOrders
-11.Inventory
 12.PurchaseOrderDetails
+
+--Ingestion
+13.Ingestion.py
 
