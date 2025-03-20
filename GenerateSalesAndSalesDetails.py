@@ -5,9 +5,11 @@ import random
 import random
 from datetime import datetime, timedelta
 import pandas as pd
+import configparser,argparse
+
 
 last_timestamp = None
-store_start_time ="10:00:00"
+store_start_time ="07:00:00" # fixed to avoid transaction date moving to next date
 TABLE_NAME1 ="sales" 
 TABLE_NAME2 ="salesdetails"
 
@@ -19,8 +21,8 @@ def generate_transaction_timestamp(start_date="2024-06-01", start_time=store_sta
         last_timestamp = datetime.strptime(f"{start_date} {start_time}", "%Y-%m-%d %H:%M:%S")
     else:
         # Generate random minutes (1 to 5) and seconds (0 to 59)
-        rand_minutes = random.randint(1, 5)
-        rand_seconds = random.randint(0, 59)
+        rand_minutes = random.randint(1, 1)
+        rand_seconds = random.randint(0,1)
         
         # Update the timestamp
         last_timestamp += timedelta(minutes=rand_minutes, seconds=rand_seconds)
@@ -82,6 +84,7 @@ def generate_sales_and_salesdetails_data(input_sale_date,input_max_salesid,input
         payment_method = random.choice(payment_method_types)
         total_cost = 0
         transaction_ts = str(generate_transaction_timestamp(start_date=sale_date))
+        print(f"transaction_ts :{transaction_ts}")
         
         emp_str_detail =random.choice(emp_str_details)
         cust_detail = random.choice(cust_details)
@@ -141,7 +144,7 @@ def create_sales_table():
 
 
 def insert_data_into_sales_table(sales_detils_data):
-    # create_sales_table()
+    create_sales_table()
     # print("Data to Be Loaded :\n",sales_detils_data)
     logger.write_log("INFO", f"Insert Data Into '{TABLE_NAME1}' Table ...",__file__)
     insert_data_query = f"""INSERT INTO {TABLE_NAME1}  (SaleDate,SaleID,StoreID,EmployeeID,CustomerID,TotalAmount,PaymentMethod,SalesTransactionTimestamp)
@@ -184,7 +187,7 @@ def create_salesdetail_table():
                             -- ,FOREIGN KEY (SaleID) REFERENCES Sales(SaleID)
                             -- ,FOREIGN KEY (ProductID) REFERENCES Products(ProductID)
                             );
-                    )
+                    
                         """
     logger.write_log("INFO", f"Executing Query :{create_table_query}",__file__)
     db_cursor.execute(create_table_query)
@@ -193,7 +196,7 @@ def create_salesdetail_table():
 
 
 def insert_data_into_salesdetails_table(sales_detils_data):
-    # self.create_product_table()
+    # create_salesdetail_table()
     logger.write_log("INFO", f"Insert Data Into '{TABLE_NAME2}' Table ...",__file__)
     insert_data_query = f"""INSERT INTO {TABLE_NAME2}  (SaleDate,SaleID,SaleDetailID, ProductID, Quantity, UnitPrice, Subtotal,SalesTransactionTimestamp) 
                             VALUES                     (      %s,     %s,         %s,        %s,       %s,        %s,       %s,               %s);"""
@@ -219,7 +222,11 @@ if __name__ == '__main__':
     db_conn = db_obj.get_connection()
     db_cursor = db_conn.cursor() 
 
-    in_sale_date = '2024-06-09'
+    parser = argparse.ArgumentParser(description="Employee Attendance Tracker")
+    parser.add_argument("-d", "--swipe_date", type=str, required=False, help="Share The Date For Which You want to generate Employees Swipe In data")
+    args = parser.parse_args()
+
+    in_sale_date = args.swipe_date #'2024-06-09'
     in_max_salesid = 1000
     in_max_lineid_per_saleid = 5
     logger.write_log("INFO", f"Procesing Sales Data For :",__file__)
